@@ -1,0 +1,11 @@
+apiVersion: security.istio.io/v1
+kind: RequestAuthentication
+metadata:
+  name: nginx-request-auth
+spec:
+  jwtRules:
+    - issuer: http://localhost:8281
+      jwks: '{"keys":[{"kty":"oct","k":"a83892b072a4d80f5ef5e3cd50e47f637a40b63ad6c600c43d8aa6ef799eeef2","alg":"HS256"}]}'
+  selector:
+    matchLabels:
+      app: nginx-v2

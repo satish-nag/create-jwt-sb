@@ -1,0 +1,21 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: nginx-authorization-policy
+spec:
+  action: ALLOW
+  rules:
+    - to:
+        - operation:
+            methods:
+              - GET
+            paths:
+              - '*'
+      when:
+        - key: request.auth.claims[roles]
+          values:
+            - Task.Write
+            - Admin
+  selector:
+    matchLabels:
+      app: nginx-v2
