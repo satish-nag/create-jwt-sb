@@ -1,0 +1,4 @@
+INSERT INTO USERS VALUES(1, 'Satish','Admin');
+INSERT INTO USERS VALUES(2, 'Babu','user');
+INSERT INTO USERS VALUES(3, 'Nagamalla','user');
+COMMIT;

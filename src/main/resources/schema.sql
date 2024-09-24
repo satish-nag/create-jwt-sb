@@ -1,0 +1,1 @@
+CREATE TABLE USERS(id number primary key, name varchar(20),role varchar(20));
