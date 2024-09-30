@@ -1,0 +1,22 @@
+		KeyFactory kf = KeyFactory.getInstance("RSA");
+		PKCS8EncodedKeySpec keySpecPKCS8 = new PKCS8EncodedKeySpec(Base64.getDecoder().decode("MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIQFkWjtRS3KY6hDkqQ8hGpj0WR/uQGxMLSHeHdB72m8CEPr7PRUCavHB5r6wLA+gYjPqidcp1K6sflLZaDQv+PW5kMknfiM0UQpafyGOe31AGfu9KPa9b64mwydZYqzPQgNinjCEWWE0lZG31/g77hJk854CoMfqTHkH9Rv/CABAgMBAAECgYAmUrdzDe0W7bkgDv1yT17gwzj1Q14g756DyQ9fDvTAbKS5krKl+f8UriG3CzMD9iED5cQuyOaJTUh8ZTaLCA2rWkeVgLfFO0V8fCQgWqhWrXYNxxKHlpJjkjq9GueOXmstWTrQjXTaCle8b2L2e0yIlkUL2ib4/IkMEIBvo53vAQJBAM0TTeIkZCVuyDpjGgb4CYMtlot6FC+DgKJOJYkm6ppH5VYa/XaIIgfZm0tur+fxgJvLM65W5MJwrrDTrIQI/C0CQQCkzjlmd8b1xhEemfyQy6u9p9ISvAhVnqyxWBuJvVD/2n6X5Aveu8KHtoo6GkU0KXEgyhVO8Er+PjXG1HGAi1OlAkEAs4UElsQ4jrQtvz7ll9glq5mKwco6RWWeg3ZZUXipwijRz9CMtOhyseCCG0Rn5Gj6pmb5dNJIKxYtNkn2KRcceQJALabai6HeQTKOh3WMWuewOScFsB7aCC2eFLodVrhUeasiqhyHlTlZl5JfE903Ek3wgm64HFe/zlGZP+yVTFBL6QJAQdQQzvjsDhCdG5Reraj4SkWN97p+SzhBhQiffpKBcbWdtfbWcpdMlA5CHj49Td8ydo0WQ/aCY89IiwDjjX1nFw=="));
+		PrivateKey privateKey = kf.generatePrivate(keySpecPKCS8);
+
+		X509EncodedKeySpec publicPkcs8 = new X509EncodedKeySpec(Base64.getDecoder().decode("MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCEBZFo7UUtymOoQ5KkPIRqY9Fkf7kBsTC0h3h3Qe9pvAhD6+z0VAmrxwea+sCwPoGIz6onXKdSurH5S2Wg0L/j1uZDJJ34jNFEKWn8hjnt9QBn7vSj2vW+uJsMnWWKsz0IDYp4whFlhNJWRt9f4O+4SZPOeAqDH6kx5B/Ub/wgAQIDAQAB"));
+		PublicKey publicKey = kf.generatePublic(publicPkcs8);
+
+		String authInfo = getAuthInfo();
+
+		Cipher encryptCipher = Cipher.getInstance("RSA");
+		encryptCipher.init(Cipher.ENCRYPT_MODE,privateKey);
+		byte[] bytes = encryptCipher.doFinal(authInfo.getBytes(StandardCharsets.UTF_8));
+		String encodedSecret = Base64.getEncoder().encodeToString(bytes);
+		System.out.println(encodedSecret);
+
+		Cipher decryptCipher = Cipher.getInstance("RSA");
+		decryptCipher.init(Cipher.DECRYPT_MODE,publicKey);
+		byte[] decodedBytes = decryptCipher.doFinal(Base64.getDecoder().decode(encodedSecret));
+		System.out.println(new String(decodedBytes));
+
+		JSONObject object = new JSONObject(new String(decodedBytes));
+		System.out.println(new Date((Long) object.get("exp")).compareTo(new Date()));
